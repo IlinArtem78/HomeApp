@@ -4,43 +4,60 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using HomeApp.Pages; 
 
 namespace HomeApp.ViewModel
 {
     public class QuestionnaireViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<Question> Questions { get; set; }
-        public ICommand NextCommand { get; }
+        public List<string> CabinetTypes { get; } = new List<string> { "Настенный", "Напольный", "19\"" };
+        public List<string> Sizes { get; } = new List<string> { "600x800x2000", "800x1000x2200" };
+
+        private string _selectedType;
+        public string SelectedType
+        {
+            get => _selectedType;
+            set { _selectedType = value; OnPropertyChanged(); }
+        }
+
+        private string _selectedSize;
+        public string SelectedSize
+        {
+            get => _selectedSize;
+            set { _selectedSize = value; OnPropertyChanged(); }
+        }
+
+        public ICommand SearchCommand { get; }
 
         public QuestionnaireViewModel()
         {
-            Questions = new ObservableCollection<Question>
-        {
-            new Question { Text = "Тип шкафа", Options = new List<string> { "Напольный", "Настенный", "19\"" } },
-            new Question { Text = "Габариты", Options = new List<string> { "600x800x2000", "800x1000x2200" } }
-        };
-
-            NextCommand = new Command(async () => await GenerateReport());
+            SearchCommand = new Command(async () => await SearchCabinetsAsync());
         }
 
-        private async Task GenerateReport()
+        private async Task SearchCabinetsAsync()
         {
-            // 1. Получаем выбранные ответы
-            var selectedCabinetType = Questions[0].SelectedOption;
-            var selectedSize = Questions[1].SelectedOption;
+            var allCabinets = await ExcelLoaderService.LoadCabinetsAsync();
 
-            // 2. Запрашиваем данные с Provento-Electro и ETM.ru
-            var cabinet = await ProventoApi.GetCabinet(selectedCabinetType, selectedSize);
-            var equipment = await EtmApi.GetEquipment();
+            // Фильтрация по выбранным параметрам
+            var filteredCabinets = allCabinets
+                .Where(c => c.Type == SelectedType && c.Size.Contains(SelectedSize))
+                .ToList();
 
-            // 3. Переходим на страницу с таблицей
+            // Переход на страницу с результатами
             await Application.Current.MainPage.Navigation.PushAsync(
-                new ResultsPage(cabinet, equipment)
+                new ResultPages(filteredCabinets)
             );
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
+
 }

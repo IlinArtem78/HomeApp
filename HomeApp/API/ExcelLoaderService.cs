@@ -6,6 +6,7 @@ using HomeApp.Models;
 using System.Data;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
 
 namespace HomeApp.API
 {
@@ -14,44 +15,28 @@ namespace HomeApp.API
         public static async Task<List<Cabinet>> LoadCabinetsAsync()
         {
             var cabinets = new List<Cabinet>();
-
             try
             {
-                // 1. Загрузка файла
-                var stream = await App.HttpClient.GetStreamAsync(
-                    "https://provento-electro.ru/upload/price.xlsx");
-
-                // 2. Настройка читателя
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                var stream = await App.HttpClient.GetStreamAsync("https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Fprovento-electro.ru%2Fupload%2Fprice.xlsx&wdOrigin=BROWSELINK");
                 using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
-                    var dataSet = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    var table = reader.AsDataSet().Tables[0];
+                    foreach (DataRow row in table.Rows)
                     {
-                        ConfigureDataTable = _ => new ExcelDataTableConfiguration()
-                        {
-                            UseHeaderRow = true
-                        }
-                    });
-
-                    // 3. Парсинг данных (адаптируйте под вашу структуру Excel)
-                    foreach (DataRow row in dataSet.Tables[0].Rows)
-                    {
-                        cabinets.Add(new Cabinet()
+                        cabinets.Add(new Cabinet
                         {
                             Name = row["Наименование"].ToString(),
                             Type = row["Тип"].ToString(),
                             Size = row["Габариты"].ToString(),
-                            Price = decimal.Parse(row["Цена"].ToString()),
-                            Url = row["Ссылка"]?.ToString()
+                            Price = decimal.Parse(row["Цена"].ToString())
                         });
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка: {ex.Message}");
+             
             }
-
             return cabinets;
         }
     }

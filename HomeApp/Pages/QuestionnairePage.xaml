@@ -4,54 +4,24 @@
              xmlns:viewModels="clr-namespace:HomeApp.ViewModel"
              x:Class="HomeApp.Pages.QuestionnairePage"
              Title="Подбор шкафа">
+    <ContentPage.Content>
+        <StackLayout Padding="20">
+            <!-- Вопрос 1: Тип шкафа -->
+            <Label Text="1. Тип шкафа:" FontAttributes="Bold"/>
+            <Picker Title="Выберите тип" 
+                ItemsSource="{Binding CabinetTypes}"
+                SelectedItem="{Binding SelectedType}"/>
 
-    <ContentPage.BindingContext>
-        <viewModels:QuestionnaireViewModel />
-    </ContentPage.BindingContext>
+            <!-- Вопрос 2: Габариты -->
+            <Label Text="2. Габариты:" FontAttributes="Bold"/>
+            <Picker Title="Выберите размер" 
+                ItemsSource="{Binding Sizes}"
+                SelectedItem="{Binding SelectedSize}"/>
 
-    <ScrollView>
-        <StackLayout Padding="20" Spacing="15">
-
-            <!-- Динамический список вопросов -->
-            <ListView ItemsSource="{Binding Questions}" 
-                      HasUnevenRows="True"
-                      SeparatorVisibility="None"
-                      IsEnabled="True">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <StackLayout Spacing="10">
-                                <!-- Текст вопроса -->
-                                <Label Text="{Binding Text}" 
-                                       FontAttributes="Bold" 
-                                       FontSize="Medium"/>
-
-                                <!-- Варианты ответов (RadioButton) -->
-                                <StackLayout BindableLayout.ItemsSource="{Binding Options}">
-                                    <BindableLayout.ItemTemplate>
-                                        <DataTemplate>
-                                            <RadioButton Content="{Binding .}"
-                                                          IsChecked="{Binding SelectedOption, 
-                                                                             Source={RelativeSource AncestorType={x:Type ViewCell}}, 
-                                                                             Converter={StaticResource RadioButtonConverter}}"
-                                                          GroupName="OptionsGroup"/>
-                                        </DataTemplate>
-                                    </BindableLayout.ItemTemplate>
-                                </StackLayout>
-                            </StackLayout>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-
-            <!-- Кнопка "Далее" -->
-            <Button Text="Рассчитать стоимость" 
-                    Command="{Binding NextCommand}"
-                    HorizontalOptions="Center"
-                    BackgroundColor="#2196F3"
-                    TextColor="White"
-                    Padding="30,10"/>
-
+            <!-- Кнопка поиска -->
+            <Button Text="Найти шкафы" 
+                Command="{Binding SearchCommand}" 
+                Margin="0,20"/>
         </StackLayout>
-    </ScrollView>
+    </ContentPage.Content>
 </ContentPage>

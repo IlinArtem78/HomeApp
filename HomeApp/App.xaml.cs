@@ -14,8 +14,8 @@ namespace HomeApp
         {
 
             InitializeComponent();
-
-            MainPage = new LoginPage();
+            MainPage = new NavigationPage(new QuestionnairePage());
+           // MainPage = new LoginPage();
         }
 
         protected override void OnStart()

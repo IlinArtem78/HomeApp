@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Pages\ResultPages.xaml.cs">
+      <DependentUpon>ResultPages.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Pages\QuestionnairePage.xaml.cs">
       <DependentUpon>QuestionnairePage.xaml</DependentUpon>
     </Compile>
@@ -27,6 +30,9 @@
 
   <ItemGroup>
     <EmbeddedResource Update="Pages\LoginPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Pages\ResultPages.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Pages\QuestionnairePage.xaml">

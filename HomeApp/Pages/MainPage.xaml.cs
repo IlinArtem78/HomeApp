@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace HomeApp
+
+namespace HomeApp.Pages
 {
     public partial class MainPage : ContentPage
     {
